@@ -7,6 +7,14 @@ const REPO = {
 
 const CALLS = [
   {
+    id: "agents-allied",
+    title: "Allied Universal - OneStream Agents / MCP Server",
+    date: "30 Jul 2026",
+    isoDate: "2026-07-30",
+    customer: "Allied Universal",
+    product: "SensibleAI Agents",
+  },
+  {
     id: "mcp-agents",
     title: "SensibleAI Agents - MCP Server demo",
     date: "28 Jul 2026",
@@ -77,6 +85,32 @@ const SCRIPTS = [
     demoType: "Live product",
     coreMessage:
       "A governed ML adjustment layer on field inputs, with visible drivers and scenarios",
+  },
+  {
+    id: "agents-mcp-positioning",
+    callId: "agents-allied",
+    subject: "SensibleAI Agents & MCP Server Positioning",
+    file: "demo-script-sensible-ai-agents-mcp-positioning.md",
+    presenter: "David Respaldiza",
+    segment: "9:30–32:00",
+    durationMin: 22,
+    steps: 8,
+    demoType: "Slides",
+    coreMessage:
+      "Connect Claude (or any MCP client) to OneStream data in a governed fashion — not shadow AI",
+  },
+  {
+    id: "agents-finance-analyst",
+    callId: "agents-allied",
+    subject: "Finance Analyst Agent & Analysis Automation",
+    file: "demo-script-sensible-ai-agents-finance-analyst-demo.md",
+    presenter: "Daniel Collura",
+    segment: "32:00–51:00 + 53:00–60:00",
+    durationMin: 25,
+    steps: 12,
+    demoType: "Live product",
+    coreMessage:
+      "Power users stop rebuilding Quick Views and Excel math — agent drills your cube data to explain variances",
   },
 ];
 
