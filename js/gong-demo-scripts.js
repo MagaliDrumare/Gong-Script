@@ -15,6 +15,14 @@ const CALLS = [
     product: "SensibleAI Agents",
   },
   {
+    id: "agents-bosselman",
+    title: "Bosselman | OneStream AI Agents",
+    date: "28 Jul 2026",
+    isoDate: "2026-07-28",
+    customer: "Bosselman",
+    product: "SensibleAI Agents",
+  },
+  {
     id: "mcp-agents",
     title: "SensibleAI Agents - MCP Server demo",
     date: "28 Jul 2026",
@@ -111,6 +119,45 @@ const SCRIPTS = [
     demoType: "Live product",
     coreMessage:
       "Power users stop rebuilding Quick Views and Excel math — agent drills your cube data to explain variances",
+  },
+  {
+    id: "bosselman-agents-positioning",
+    callId: "agents-bosselman",
+    subject: "SensibleAI Agents & MCP Positioning",
+    file: "demo-script-bosselman-sensible-ai-agents-positioning.md",
+    presenter: "Wes Johnson",
+    segment: "8:39–17:24",
+    durationMin: 8,
+    steps: 9,
+    demoType: "Slides",
+    coreMessage:
+      "Maintain governed data while leveraging AI to maximize ROI on OneStream — not shadow AI",
+  },
+  {
+    id: "bosselman-finance-analyst",
+    callId: "agents-bosselman",
+    subject: "Finance Analyst Agent & Store-Level Analysis",
+    file: "demo-script-bosselman-finance-analyst-demo.md",
+    presenter: "Logan Shallenberger",
+    segment: "17:49–45:07",
+    durationMin: 27,
+    steps: 16,
+    demoType: "Live product",
+    coreMessage:
+      "Agents automate variance drill, store trends, and month-end narrative so accountants analyze locations",
+  },
+  {
+    id: "bosselman-forecasting",
+    callId: "agents-bosselman",
+    subject: "Sensible AI Forecasting (Quick Demo)",
+    file: "demo-script-bosselman-sensible-ai-forecasting.md",
+    presenter: "Logan Shallenberger",
+    segment: "45:07–55:21",
+    durationMin: 10,
+    steps: 13,
+    demoType: "Live product",
+    coreMessage:
+      "Best forecast with the least effort — AI learns per account-store intersection and explains why numbers moved",
   },
 ];
 
