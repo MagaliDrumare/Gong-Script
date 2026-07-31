@@ -44,6 +44,17 @@ const GONG_CALL = {
   url: "https://us-102578.app.gong.io/call?id=1659602167804289242",
 };
 
+const REPO = {
+  name: "MagaliDrumare/Gong-Script",
+  url: "https://github.com/MagaliDrumare/Gong-Script",
+  branch: "main",
+  blobBase: "https://github.com/MagaliDrumare/Gong-Script/blob/main",
+};
+
+function githubUrl(file: string): string {
+  return `${REPO.blobBase}/${file}`;
+}
+
 const SCRIPTS: readonly DemoScript[] = [
   {
     id: "positioning",
@@ -130,6 +141,7 @@ function ScriptCard({ script }: { script: DemoScript }) {
               {script.gongUrl ? (
                 <Link href={script.gongUrl}>Open Gong call</Link>
               ) : null}
+              <Link href={githubUrl(script.file)}>View on GitHub</Link>
               <Text size="small" tone="quaternary">
                 {script.file}
               </Text>
@@ -189,6 +201,26 @@ export default function GongDemoScriptsCanvas() {
           Source: OneStreamBlog workspace · Gong demo script pipeline · Jul 2026
         </Text>
       </Stack>
+
+      <Card>
+        <CardHeader trailing={<Pill active>Published</Pill>}>
+          Repository
+        </CardHeader>
+        <CardBody>
+          <Stack gap={8}>
+            <Row gap={12} wrap align="center">
+              <Link href={REPO.url}>{REPO.name}</Link>
+              <Text size="small" tone="tertiary">
+                branch {REPO.branch} · {completed.length} scripts + canvas source
+              </Text>
+            </Row>
+            <Text size="small" tone="quaternary">
+              Static dashboard served from `index.html`; canvas source kept at
+              `canvas/gong-demo-scripts.canvas.tsx`.
+            </Text>
+          </Stack>
+        </CardBody>
+      </Card>
 
       <Row gap={8} wrap>
         <Pill active={filter === "all"} onClick={() => setFilter("all")}>
