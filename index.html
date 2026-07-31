@@ -15,58 +15,16 @@
     <h1>Gong Demo Script Library</h1>
     <p class="subtitle">Enablement scripts extracted from Gong demo calls — one markdown file per subject demoed.</p>
 
-    <div class="stats">
-      <div class="stat">
-        <div class="stat-value success">2</div>
-        <div class="stat-label">Scripts ready</div>
-      </div>
-      <div class="stat">
-        <div class="stat-value">26 min</div>
-        <div class="stat-label">Captured demo time</div>
-      </div>
-      <div class="stat">
-        <div class="stat-value">22</div>
-        <div class="stat-label">Rehearsal steps</div>
-      </div>
-    </div>
+    <div class="stats" id="stats"></div>
 
-    <div class="usage-bar-wrap">
-      <div class="usage-labels">
-        <span>2 scripts extracted</span>
-        <span>100% ready</span>
-      </div>
-      <div class="usage-bar">
-        <div class="usage-segment" style="width: 100%"></div>
-      </div>
-      <p class="caption">Source: OneStreamBlog workspace · Gong demo script pipeline · Jul 2026</p>
-    </div>
+    <div class="usage-bar-wrap" id="usage"></div>
 
-    <div class="filters">
-      <button type="button" class="pill active" data-filter="all">All scripts</button>
-      <button type="button" class="pill" data-filter="completed">Ready</button>
-    </div>
+    <div class="repo-wrap" id="repo"></div>
 
-    <section class="section" id="call-section">
-      <button type="button" class="call-header open" id="call-toggle" aria-expanded="true">
-        <span class="chevron">›</span>
-        <span>SensibleAI Agents - MCP Server demo</span>
-        <span class="call-meta">28 Jul 2026 · 35 min · 2</span>
-      </button>
-      <div class="call-body" id="call-body">
-        <p class="call-intro">GBT Travel Services UK Limited · 2 scripts extracted from this call</p>
-        <div class="call-actions">
-          <a class="btn btn-secondary" href="https://us-102578.app.gong.io/call?id=1659602167804289242" target="_blank" rel="noopener">Open Gong call</a>
-          <span class="caption">Call ID 1659602167804289242</span>
-        </div>
-        <div class="cards-grid" id="call-cards"></div>
-      </div>
-    </section>
+    <div class="filters" id="filters"></div>
 
-    <section class="section" id="last-section">
-      <h2>Last scripts</h2>
-      <p class="caption" style="margin-bottom: 12px;">Most recently extracted from Gong · 28 Jul 2026</p>
-      <div class="cards-stack" id="last-cards"></div>
-    </section>
+    <h2 class="calls-heading">Calls and scripts</h2>
+    <div id="calls"></div>
   </main>
 
   <script src="js/gong-demo-scripts.js"></script>

@@ -57,7 +57,7 @@ a:hover {
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 12px;
   margin-bottom: 20px;
 }
@@ -108,6 +108,25 @@ a:hover {
 
 .usage-segment {
   background: var(--success);
+}
+
+.usage-segment.green {
+  background: var(--success);
+}
+
+.usage-segment.blue {
+  background: var(--accent);
+}
+
+.repo-wrap {
+  margin-bottom: 20px;
+}
+
+.calls-heading {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 4px;
 }
 
 .caption {
@@ -199,6 +218,13 @@ a:hover {
   margin-bottom: 12px;
 }
 
+.call-note {
+  font-size: 12px;
+  font-style: italic;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+}
+
 .call-actions {
   display: flex;
   flex-wrap: wrap;
@@ -246,6 +272,19 @@ a:hover {
   color: #fff;
   font-weight: 500;
   white-space: nowrap;
+}
+
+.badge.latest {
+  background: var(--success);
+  color: #1e1e1e;
+}
+
+code {
+  font-size: 11px;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
 }
 
 .card-body {
@@ -315,6 +354,12 @@ a:hover {
 
 .hidden-section {
   display: none;
+}
+
+@media (max-width: 860px) {
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 640px) {
