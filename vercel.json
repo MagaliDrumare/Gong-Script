@@ -1,7 +1,4 @@
 {
-  "rewrites": [
-    { "source": "/", "destination": "/gong-demo-scripts.html" }
-  ],
   "headers": [
     {
       "source": "/(.*\\.md)",
