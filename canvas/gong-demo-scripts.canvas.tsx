@@ -18,31 +18,31 @@ import {
   useCanvasState,
 } from "cursor/canvas";
 
-type ScriptStatus = "completed" | "planned";
+interface GongCall {
+  readonly id: string;
+  readonly title: string;
+  readonly date: string;
+  /** Sortable form of `date`, newest call surfaces first. */
+  readonly isoDate: string;
+  readonly customer: string;
+  readonly product: string;
+  readonly url?: string;
+  readonly callId?: string;
+  readonly durationMin?: number;
+}
 
 interface DemoScript {
   readonly id: string;
+  readonly callId: string;
   readonly subject: string;
-  readonly status: ScriptStatus;
-  readonly file?: string;
-  readonly gongCall: string;
-  readonly gongUrl?: string;
-  readonly gongDate?: string;
-  readonly presenter?: string;
-  readonly segment?: string;
+  readonly file: string;
+  readonly presenter: string;
+  readonly segment: string;
   readonly durationMin: number;
   readonly steps: number;
   readonly demoType: string;
   readonly coreMessage: string;
 }
-
-const GONG_CALL = {
-  title: "SensibleAI Agents - MCP Server demo",
-  date: "28 Jul 2026",
-  durationMin: 35,
-  customer: "GBT Travel Services UK Limited",
-  url: "https://us-102578.app.gong.io/call?id=1659602167804289242",
-};
 
 const REPO = {
   name: "MagaliDrumare/Gong-Script",
@@ -51,19 +51,34 @@ const REPO = {
   blobBase: "https://github.com/MagaliDrumare/Gong-Script/blob/main",
 };
 
-function githubUrl(file: string): string {
-  return `${REPO.blobBase}/${file}`;
-}
+const CALLS: readonly GongCall[] = [
+  {
+    id: "mcp-agents",
+    title: "SensibleAI Agents - MCP Server demo",
+    date: "28 Jul 2026",
+    isoDate: "2026-07-28",
+    customer: "GBT Travel Services UK Limited",
+    product: "SensibleAI Agents",
+    url: "https://us-102578.app.gong.io/call?id=1659602167804289242",
+    callId: "1659602167804289242",
+    durationMin: 35,
+  },
+  {
+    id: "forecast-regency",
+    title: "Sensible AI Forecast Demo for Regency Centers",
+    date: "15 May 2026",
+    isoDate: "2026-05-15",
+    customer: "Regency Centers + Riveron",
+    product: "SensibleAI Forecast",
+  },
+];
 
 const SCRIPTS: readonly DemoScript[] = [
   {
-    id: "positioning",
+    id: "agents-positioning",
+    callId: "mcp-agents",
     subject: "SensibleAI Agents Positioning & Architecture",
-    status: "completed",
     file: "demo-script-sensible-ai-agents-positioning.md",
-    gongCall: GONG_CALL.title,
-    gongUrl: GONG_CALL.url,
-    gongDate: GONG_CALL.date,
     presenter: "Jesper Gardtman",
     segment: "3:12–9:00",
     durationMin: 6,
@@ -72,13 +87,10 @@ const SCRIPTS: readonly DemoScript[] = [
     coreMessage: "Governed agentic AI for finance — two front doors, one architecture",
   },
   {
-    id: "live-demo",
+    id: "agents-live-demo",
+    callId: "mcp-agents",
     subject: "SensibleAI Agents MCP Live Demo",
-    status: "completed",
     file: "demo-script-sensible-ai-agents-mcp-live-demo.md",
-    gongCall: GONG_CALL.title,
-    gongUrl: GONG_CALL.url,
-    gongDate: GONG_CALL.date,
     presenter: "Peter Gilfillan",
     segment: "9:46–30:11",
     durationMin: 20,
@@ -86,94 +98,175 @@ const SCRIPTS: readonly DemoScript[] = [
     demoType: "Live product",
     coreMessage: "Finance Analyst in OneStream + MCP/Claude for governed executive self-serve",
   },
+  {
+    id: "forecast-positioning",
+    callId: "forecast-regency",
+    subject: "SensibleAI Forecast Positioning & Architecture",
+    file: "demo-script-sensible-ai-forecast-positioning.md",
+    presenter: "Matt DeLise",
+    segment: "6:30–23:30",
+    durationMin: 17,
+    steps: 14,
+    demoType: "Slides",
+    coreMessage: "Apply ML where accuracy and effort gains are asymmetric — explainability wins adoption",
+  },
+  {
+    id: "forecast-live-demo",
+    callId: "forecast-regency",
+    subject: "SensibleAI Forecast Live Demo",
+    file: "demo-script-sensible-ai-forecast-live-demo.md",
+    presenter: "Daniel Collura",
+    segment: "23:30–49:00",
+    durationMin: 25,
+    steps: 17,
+    demoType: "Live product",
+    coreMessage: "A governed ML adjustment layer on field inputs, with visible drivers and scenarios",
+  },
 ];
 
-const completed = SCRIPTS.filter((s) => s.status === "completed");
-const lastScripts = [...completed].reverse();
-const totalSteps = completed.reduce((sum, s) => sum + s.steps, 0);
-const totalDemoMin = completed.reduce((sum, s) => sum + s.durationMin, 0);
+const callsNewestFirst = [...CALLS].sort((a, b) =>
+  b.isoDate.localeCompare(a.isoDate),
+);
+const products = [...new Set(CALLS.map((c) => c.product))];
+const totalSteps = SCRIPTS.reduce((sum, s) => sum + s.steps, 0);
+const totalDemoMin = SCRIPTS.reduce((sum, s) => sum + s.durationMin, 0);
 
-type Filter = "all" | "completed";
+const usageColors = ["green", "blue"] as const;
 
-function statusLabel(status: ScriptStatus): string {
-  return status === "completed" ? "Ready" : "Planned";
+function githubUrl(file: string): string {
+  return `${REPO.blobBase}/${file}`;
+}
+
+function callById(id: string): GongCall {
+  return CALLS.find((c) => c.id === id)!;
+}
+
+function scriptsForCall(id: string): DemoScript[] {
+  return SCRIPTS.filter((s) => s.callId === id);
+}
+
+function minutesForCall(id: string): number {
+  return scriptsForCall(id).reduce((sum, s) => sum + s.durationMin, 0);
 }
 
 function ScriptCard({ script }: { script: DemoScript }) {
   const dispatch = useCanvasAction();
-  const isDone = script.status === "completed";
+  const call = callById(script.callId);
 
   return (
     <Card>
-      <CardHeader trailing={<Pill active={isDone}>{statusLabel(script.status)}</Pill>}>
-        {script.subject}
-      </CardHeader>
+      <CardHeader trailing={<Pill active>Ready</Pill>}>{script.subject}</CardHeader>
       <CardBody>
         <Stack gap={10}>
           <Text size="small" tone="secondary">
             {script.coreMessage}
           </Text>
           <Row gap={16} wrap>
-            {script.presenter ? (
-              <Text size="small" tone="tertiary">
-                Presenter: {script.presenter}
-              </Text>
-            ) : null}
-            {script.durationMin > 0 ? (
-              <Text size="small" tone="tertiary">
-                {script.durationMin} min · {script.steps} steps
-              </Text>
-            ) : null}
+            <Text size="small" tone="tertiary">
+              Presenter: {script.presenter}
+            </Text>
+            <Text size="small" tone="tertiary">
+              {script.durationMin} min · {script.steps} steps
+            </Text>
             <Text size="small" tone="tertiary">
               {script.demoType}
             </Text>
           </Row>
-          {script.file ? (
-            <Row gap={8} wrap>
-              <Button
-                variant="primary"
-                onClick={() =>
-                  dispatch({ type: "openFile", path: script.file! })
-                }
-              >
-                Open script
-              </Button>
-              {script.gongUrl ? (
-                <Link href={script.gongUrl}>Open Gong call</Link>
-              ) : null}
-              <Link href={githubUrl(script.file)}>View on GitHub</Link>
-              <Text size="small" tone="quaternary">
-                {script.file}
-              </Text>
-            </Row>
-          ) : (
-            <Text size="small" tone="tertiary" italic>
-              Paste a Gong URL in chat with the gong-demo-script skill to generate this script.
-            </Text>
-          )}
-          {script.segment ? (
-            <Text size="small" tone="quaternary">
-              Segment {script.segment} ·{" "}
-              {script.gongUrl ? (
-                <>
-                  Source:{" "}
-                  <Link href={script.gongUrl}>{script.gongCall}</Link>
-                  {script.gongDate ? `, ${script.gongDate}` : null}
-                </>
-              ) : (
-                <>Source: {script.gongCall}{script.gongDate ? `, ${script.gongDate}` : null}</>
-              )}
-            </Text>
-          ) : null}
+          <Row gap={8} wrap>
+            <Button
+              variant="primary"
+              onClick={() => dispatch({ type: "openFile", path: script.file })}
+            >
+              Open script
+            </Button>
+            {call.url ? <Link href={call.url}>Open Gong call</Link> : null}
+            <Link href={githubUrl(script.file)}>View on GitHub</Link>
+          </Row>
+          <Text size="small" tone="quaternary">
+            Segment {script.segment} ·{" "}
+            {call.url ? (
+              <>
+                Source: <Link href={call.url}>{call.title}</Link>, {call.date}
+              </>
+            ) : (
+              <>
+                Source: {call.title}, {call.date}
+              </>
+            )}
+          </Text>
         </Stack>
       </CardBody>
     </Card>
   );
 }
 
-export default function GongDemoScriptsCanvas() {
+function CallSection({ call, latest }: { call: GongCall; latest: boolean }) {
   const dispatch = useCanvasAction();
-  const [filter, setFilter] = useCanvasState<Filter>("filter", "all");
+  const scripts = scriptsForCall(call.id);
+
+  return (
+    <CollapsibleSection
+      title={call.title}
+      count={scripts.length}
+      defaultOpen
+      trailing={
+        <Row gap={8} align="center">
+          {latest ? <Pill size="sm" active>Latest</Pill> : null}
+          <Text size="small" tone="tertiary">
+            {call.date}
+            {call.durationMin ? ` · ${call.durationMin} min` : ""}
+          </Text>
+        </Row>
+      }
+    >
+      <Stack gap={12}>
+        <Text size="small" tone="secondary">
+          {call.customer} · {call.product} · {minutesForCall(call.id)} min captured
+          across {scripts.length} scripts
+        </Text>
+        {call.url ? (
+          <Row gap={8} wrap align="center">
+            <Button
+              variant="secondary"
+              onClick={() =>
+                dispatch({
+                  type: "newComposerChat",
+                  userPrompt:
+                    "Extract demo scripts from this Gong call using the gong-demo-script skill: " +
+                    call.url,
+                })
+              }
+            >
+              Re-run extraction
+            </Button>
+            <Text size="small" tone="tertiary">
+              Call ID {call.callId}
+            </Text>
+          </Row>
+        ) : (
+          <Text size="small" tone="quaternary" italic>
+            Gong URL not recorded for this call — add it to enable one-click re-extraction.
+          </Text>
+        )}
+        <Grid columns={2} gap={12}>
+          {scripts.map((script) => (
+            <div key={script.id}>
+              <ScriptCard script={script} />
+            </div>
+          ))}
+        </Grid>
+      </Stack>
+    </CollapsibleSection>
+  );
+}
+
+export default function GongDemoScriptsCanvas() {
+  const [product, setProduct] = useCanvasState<string>("product", "all");
+
+  const visibleCalls =
+    product === "all"
+      ? callsNewestFirst
+      : callsNewestFirst.filter((c) => c.product === product);
 
   return (
     <Stack gap={20} style={{ padding: 20, maxWidth: 960 }}>
@@ -184,34 +277,40 @@ export default function GongDemoScriptsCanvas() {
         </Text>
       </Stack>
 
-      <Grid columns={3} gap={12}>
-        <Stat value={String(completed.length)} label="Scripts ready" tone="success" />
+      <Grid columns={4} gap={12}>
+        <Stat value={String(SCRIPTS.length)} label="Scripts ready" tone="success" />
+        <Stat value={String(CALLS.length)} label="Gong calls covered" />
         <Stat value={`${totalDemoMin} min`} label="Captured demo time" />
         <Stat value={String(totalSteps)} label="Rehearsal steps" />
       </Grid>
 
       <Stack gap={6}>
         <UsageBar
-          total={completed.length}
-          topLeftLabel={`${completed.length} scripts extracted`}
-          topRightLabel="100% ready"
-          segments={[{ id: "completed", value: completed.length, color: "green" }]}
+          total={totalDemoMin}
+          topLeftLabel={`${totalDemoMin} min across ${CALLS.length} calls`}
+          topRightLabel={`${SCRIPTS.length} scripts ready`}
+          segments={callsNewestFirst.map((call, index) => ({
+            id: call.id,
+            value: minutesForCall(call.id),
+            color: usageColors[index % usageColors.length],
+          }))}
         />
         <Text size="small" tone="quaternary">
-          Source: OneStreamBlog workspace · Gong demo script pipeline · Jul 2026
+          Captured demo minutes per call ·{" "}
+          {callsNewestFirst
+            .map((c) => `${c.product} ${minutesForCall(c.id)} min`)
+            .join(" · ")}
         </Text>
       </Stack>
 
       <Card>
-        <CardHeader trailing={<Pill active>Published</Pill>}>
-          Repository
-        </CardHeader>
+        <CardHeader trailing={<Pill active>Published</Pill>}>Repository</CardHeader>
         <CardBody>
           <Stack gap={8}>
             <Row gap={12} wrap align="center">
               <Link href={REPO.url}>{REPO.name}</Link>
               <Text size="small" tone="tertiary">
-                branch {REPO.branch} · {completed.length} scripts + canvas source
+                branch {REPO.branch} · {SCRIPTS.length} scripts + canvas source
               </Text>
             </Row>
             <Text size="small" tone="quaternary">
@@ -223,65 +322,29 @@ export default function GongDemoScriptsCanvas() {
       </Card>
 
       <Row gap={8} wrap>
-        <Pill active={filter === "all"} onClick={() => setFilter("all")}>
-          All scripts
+        <Pill active={product === "all"} onClick={() => setProduct("all")}>
+          All products
         </Pill>
-        <Pill active={filter === "completed"} onClick={() => setFilter("completed")}>
-          Ready
-        </Pill>
+        {products.map((name) => (
+          <div key={name}>
+            <Pill active={product === name} onClick={() => setProduct(name)}>
+              {name}
+            </Pill>
+          </div>
+        ))}
       </Row>
 
-      <CollapsibleSection
-        title={GONG_CALL.title}
-        count={completed.length}
-        defaultOpen
-        trailing={
-          <Text size="small" tone="tertiary">
-            {GONG_CALL.date} · {GONG_CALL.durationMin} min
-          </Text>
-        }
-      >
-        <Stack gap={12}>
-          <Text size="small" tone="secondary">
-            {GONG_CALL.customer} · {completed.length} scripts extracted from this call
-          </Text>
-          <Row gap={8}>
-            <Button
-              variant="secondary"
-              onClick={() =>
-                dispatch({
-                  type: "newComposerChat",
-                  userPrompt:
-                    "Extract demo scripts from this Gong call using the gong-demo-script skill: " +
-                    GONG_CALL.url,
-                })
-              }
-            >
-              Re-run extraction
-            </Button>
-            <Text size="small" tone="tertiary">
-              Call ID 1659602167804289242
-            </Text>
-          </Row>
-          <Grid columns={2} gap={12}>
-            <ScriptCard script={completed[0]!} />
-            <ScriptCard script={completed[1]!} />
-          </Grid>
-        </Stack>
-      </CollapsibleSection>
-
-      {filter !== "completed" ? (
-        <Stack gap={8}>
-          <H2>Last scripts</H2>
-          <Text size="small" tone="tertiary">
-            Most recently extracted from Gong · {GONG_CALL.date}
-          </Text>
-          <Stack gap={12}>
-            <ScriptCard script={lastScripts[0]!} />
-            <ScriptCard script={lastScripts[1]!} />
-          </Stack>
-        </Stack>
-      ) : null}
+      <Stack gap={8}>
+        <H2>Calls and scripts</H2>
+        {visibleCalls.map((call) => (
+          <div key={call.id}>
+            <CallSection
+              call={call}
+              latest={call.id === callsNewestFirst[0]!.id}
+            />
+          </div>
+        ))}
+      </Stack>
     </Stack>
   );
 }
